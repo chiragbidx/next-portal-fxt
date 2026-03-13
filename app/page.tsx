@@ -41,6 +41,7 @@ export const metadata = {
 
 export default function Home() {
   const content = getHomeContent();
+  const fromEmail = process.env.SENDGRID_FROM_EMAIL || "demo@yourdomain.com";
 
   // Section toggles (unchanged)
   const only = (process.env.ONLY_SECTIONS ?? "")
@@ -57,7 +58,7 @@ export default function Home() {
   const sections = [
     ["hero", <HeroSection key="hero" content={content.hero} />],
     ["logos", <LogosMarqueeSection key="logos" content={content.logos} />],
-    ["sendcampaign", <SendCampaignDemo key="sendcampaign" />],
+    ["sendcampaign", <SendCampaignDemo key="sendcampaign" fromEmail={fromEmail} />],
     ["features", <FeaturesSection key="features" content={content.features} />],
     ["metrics", <MetricsSection key="metrics" content={content.metrics} />],
     ["pricing", <PricingSection key="pricing" content={content.pricing} />],
