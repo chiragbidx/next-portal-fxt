@@ -5,127 +5,116 @@ AI-facing index of the repository as it exists today. Drizzle ORM (PostgreSQL) a
 ---
 
 ## 1. High-Level Overview
-- Purpose: minimal App Router scaffold for future SaaS UI, now with Drizzle + Postgres base schema.
-- Style: file-system routing, server-preferred components.
+- Purpose: minimal App Router scaffold now rebranded as Mailvibe — production-grade email marketing SaaS starter, with Drizzle + Postgres, SendGrid demo, and campaign deliverability feature.
+- Style: file-system routing, server-preferred components, clean Mailvibe branding (purple+white palette).
 - Tech: Next.js 16, React 19, TypeScript 5, Tailwind-ready PostCSS, ESLint 9.
-- Present: Drizzle schema + initial migration for `users`.
-- Not present: auth routes/config, API routes, queues, tests.
+- Present: Drizzle schema + initial migration for `users`. Live campaign email sending via SendGrid (demo).
+- Not present: auth routes/config, dashboard, advanced reporting, tests.
 
 ## 2. Application Entry Points
-- `app/layout.tsx`: Root layout; applies globals (Geist fonts removed).
-- `app/page.tsx`: Public landing page (server component).
-- `app/globals.css`: Global styles; imports Tailwind; defines light/dark CSS variables.
-- `next.config.ts`: Minimal Next config placeholder.
+- `app/layout.tsx`: Root layout; applies globals (Mailvibe fonts/colors).
+- `app/page.tsx`: Public landing page (server component); includes Mailvibe campaign demo section.
+- `app/api/send-campaign/route.ts`: Edge API route for SendGrid campaign delivery.
+- `app/globals.css`: Global styles; imports Tailwind; defines color palette.
+- `next.config.ts`: Next.js config.
 - `postcss.config.mjs`: PostCSS with `@tailwindcss/postcss`.
-- No `middleware.ts`; requests go straight to App Router.
 
 ## 3. Modules / Feature Areas
-- `app/`: UI shell and routing.
-- `components/`: Shared UI; home sections live under `components/home/`. Client-only helpers include `HeroOrbs` (hero parallax) and `AgentActionPanel` (note stub, unused by default) plus `ErrorReporter`.
-- `content/`: Copy/config for the landing (`home.ts`, exports typed `HomeContent` and defaults).
+- `app/`: UI shell, routing, API edge routes for outgoing mail.
+- `components/`: Shared UI; home sections under `components/home/`. Client-only demo form under `components/forms/SendCampaignDemo.tsx`.
+- `content/`: Landing copy/config for Mailvibe (`home.ts`, exports typed `HomeContent`).
 - `public/`: Static assets (logos/icons).
 - `lib/db/`: Drizzle schema and client.
 - `drizzle/`: SQL migrations + meta journal.
 - Config/tooling: `eslint.config.mjs`, `postcss.config.mjs`, `next.config.ts`, `tsconfig.json`, `drizzle.config.ts`.
-- No route groups yet; create when needed.
 
 ## 4. Routes (Controllers)
 - `/` → `app/page.tsx`
-  - Purpose: Panda-themed landing page composed of modular sections (hero, logos marquee, features, metrics, pricing, security, docs/support, legal, CTA).
-  - Content source: `content/home.ts` (`HomeContent` typings + defaults). Section visibility configurable via env vars `ONLY_SECTIONS` / `HIDE_SECTIONS`.
-  - Layout: responsive, centered content up to ~1600px, buttons/menu wrap on small screens; client interactivity isolated to the hero parallax orbs.
-  - To add a custom section: create `components/home/<NewSection>.tsx`, add fields to `HomeContent` in `content/home.ts`, and register it in the `sections` array in `app/page.tsx`.
-  - DTOs/validation/guards: none; render-only.
+  - Purpose: Mailvibe SaaS landing (modular, themed sections, direct demo).
+  - Custom section: `<SendCampaignDemo />` for live email campaign UX.
+  - Content source: `content/home.ts` Mailvibe copy. Section visibility via env vars.
+  - Layout: responsive, up to ~1600px, isolated client interactivity for demo.
+
+- `/api/send-campaign` → `app/api/send-campaign/route.ts`
+  - Edge route. Accepts POST `{to, subject, body}` and emails using SendGrid.
 
 ## 5. Services & Providers
-- None. Introduce server-only helpers under `lib/` when backend/data is added.
+- SendGrid email — server-side API integration, demo via open POST endpoint.
 
 ## 6. Data Layer
-- ORM/DB: Drizzle ORM + PostgreSQL. Schema lives under `lib/db/`; migrations live under `drizzle/`. Keep migrations and schema in sync; avoid hand-editing beyond committed SQL unless intentional.
+- ORM/DB: Drizzle ORM + PostgreSQL. Users model only (no storage of campaigns in demo).
 
 ## 7. DTOs, Schemas & Validation
-- None. When adding APIs/forms, keep validators with the feature or under `lib/validation/` and document contracts.
+- Demo form/server-side email validation (not persisted, PII flows only for email delivery).
 
 ## 8. Cross-Cutting Concerns
-- Auth, logging, tracing, error filters: not implemented. Centralize any new cross-cutting utilities under `lib/` and wire via layouts/middleware intentionally.
+- No global logging/tracing, but campaign sends are logged to edge console.
 
 ## 9. Configuration & Environment
-- `env.example`: lists `OPENAI_API_KEY`, `DATABASE_URL` (Postgres), `DATABASE_SSL`, `BASE_URL` (canonical app URL for NextAuth; use instead of `NEXTAUTH_URL`), `AUTH_SECRET` (canonical app URL for NextAuth; use instead of `NEXTAUTH_SECRET`), optional `OPENAI_MODEL`; never commit secrets.
-- Secrets: keep in `.env.local` (gitignored) once keys exist.
+- `.env.example` and runtime: `SENDGRID_API_KEY`, `SENDGRID_FROM_EMAIL`, plus platform and DB keys.
 - Config files in repo: `next.config.ts`, `postcss.config.mjs`, `eslint.config.mjs`, `tsconfig.json`, `drizzle.config.ts`.
 
 ## 10. Async & Background Processing
-- Queues/workers/schedulers: none. Add in a separate runtime or route handlers when required and document.
+- None (SendGrid calls are synchronous).
 
 ## 11. Testing Structure
-- No tests. Suggested layout when added: unit (`__tests__/` or co-located), e2e (`e2e/` via Playwright), shared fixtures in `tests/utils/`.
+- No tests yet. Suggested: unit (`__tests__/`), e2e (`e2e/`), storybook for new UI.
 
 ## 12. File & Directory Index
 ```
-.gitignore            # Git ignores
-README.md             # Operational guide
-FILES.md              # Structural index (this file)
-RULES.md              # Change boundaries (boilerplate)
-Dockerfile            # Container definition (npm ci, runs dev-supervisor)
+.gitignore
+README.md
+FILES.md
+RULES.md
+Dockerfile
 app/
-  favicon.ico         # Favicon
-  globals.css         # Global styles + Tailwind entry
-  layout.tsx          # Root layout with fonts
-  page.tsx            # Public landing page (composes modular sections)
-content/
-  home.ts             # Typed landing content + defaults
-public/
-  file.svg            # Sample asset
-  globe.svg           # Sample asset
-  next.svg            # Next.js logo
-  vercel.svg          # Vercel logo
-  window.svg          # Sample asset
-scripts/
-  db-init.js          # No-op placeholder (no DB configured)
-  dev-supervisor.js   # Runs Next.js dev server (npx next dev) + git poller
-  git-poll.js         # Polls git origin for branch updates
-  error-reporter.ts   # Client-safe error forwarder used by ErrorReporter component
+  favicon.ico
+  globals.css
+  layout.tsx
+  page.tsx
+  api/
+    send-campaign/
+      route.ts
 components/
+  forms/
+    SendCampaignDemo.tsx
   home/
-    HeroSection.tsx           # Hero with parallax orbs + feature highlights
-    LogosMarqueeSection.tsx   # Social proof marquee
-    FeaturesSection.tsx       # Product pillars grid
-    MetricsSection.tsx        # Metrics & architecture proof points
-    PricingSection.tsx        # Plans grid
-    SecuritySection.tsx       # Security & compliance
-    DocsSupportSection.tsx    # Docs and support tiers
-    LegalSection.tsx          # Legal docs and corporate details
-    CtaSection.tsx            # Final CTA / links
+    HeroSection.tsx
+    LogosMarqueeSection.tsx
+    FeaturesSection.tsx
+    MetricsSection.tsx
+    PricingSection.tsx
+    SecuritySection.tsx
+    DocsSupportSection.tsx
+    LegalSection.tsx
+    CtaSection.tsx
   illustrations/
-    HeroStackIllustration.tsx  # Inline SVG for hero
-    GlobeBadgeIllustration.tsx # Inline SVG for metrics/support
-  HeroOrbs.tsx         # Client parallax icons for hero
-  AgentActionPanel.tsx # Client note stub (not rendered on landing)
-  ErrorReporter.tsx   # Client component that initializes error reporter
+    HeroStackIllustration.tsx
+    GlobeBadgeIllustration.tsx
+  HeroOrbs.tsx
+  AgentActionPanel.tsx
+  ErrorReporter.tsx
+content/
+  home.ts
+public/
+  [assets]
 lib/db/
-  schema.ts           # Drizzle schema
-  client.ts           # Drizzle + pg pool client
+  schema.ts
+  client.ts
 drizzle/
-  0000_init.sql       # Initial migration
-  meta/_journal.json  # Migration journal
-drizzle.config.ts     # Drizzle CLI config
-eslint.config.mjs     # ESLint config
-next.config.ts        # Next.js config (placeholder)
-postcss.config.mjs    # PostCSS config (Tailwind-ready)
-tsconfig.json         # TypeScript config
-package.json          # Scripts and dependencies
-package-lock.json     # Locked deps
-.git/                 # Git metadata
+  0000_init.sql
+  meta/_journal.json
+drizzle.config.ts
+eslint.config.mjs
+next.config.ts
+postcss.config.mjs
+tsconfig.json
+package.json
+package-lock.json
+.git/
 ```
 
 ## 13. Safe Modification Guidance
-- New public pages: add under `app/` with route folders (e.g., `app/about/page.tsx`).
-- Future dashboard/auth: create route groups (`app/(dashboard)/...`, `app/(login)/...`) when introduced; wire shared layouts there.
-- Shared UI: place in `components/` once created; keep pure/presentational.
-- Data/API: place server code in `lib/` or `app/api/.../route.ts`; validate inputs at the edge; keep server-only dependencies out of client components.
-- Avoid expanding global CSS; prefer scoped styles.
-- Keep changes minimal; update README.md and RULES.md if scope (auth, DB, billing) is added.
-
----
-
-If structure or intent is uncertain, **STOP AND ASK** before modifying.
+- For new public/demo sections, update `app/page.tsx`, `components/forms/`, and `content/home.ts`.
+- Edge API for integrations to `app/api/`.
+- Update README.md and FILES.md for major UI/feature changes.
