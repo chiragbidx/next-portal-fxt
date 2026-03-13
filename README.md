@@ -1,23 +1,22 @@
 # Mailvibe — Email Marketing SaaS Boilerplate
 
-Production-grade starter, built on Next.js 16 App Router, React 19, TypeScript 5. Polished landing with live email campaign demo, SendGrid server integration, Drizzle ORM/PostgreSQL, and ready for SaaS expansion.
+Production-grade starter, built on Next.js 16 App Router, React 19, TypeScript 5. Polished landing, live email campaign demo, SendGrid server integration, Drizzle ORM/PostgreSQL, **authenticated dashboard**, and campaign CRUD for real SaaS growth.
 
 ---
 
 ## 1. Current Scope
-- Purpose: rebranded platform as "Mailvibe" — fast, simple, and reliable email marketing SaaS starter.
-- Features: live "Send Campaign" email demo on landing (`/`), Drizzle ORM for future database needs, and ready-for-scale UI.
-- Data: Drizzle has a base `users` model.
-- Email delivery: Server API route `/api/send-campaign` (Next.js Edge). Sends campaigns via SendGrid (`SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL` required). Logs sends to console.
-- Auth: NextAuth installed; not yet configured.
+- **Dashboard & Auth:** Mailvibe’s dashboard is fully protected (NextAuth), with login/register, access control, and user home screen.
+- **Campaign CRUD:** Users can create, save, list, and send their own campaigns.
+- **Live Demo:** Unauthenticated demo (public landing) and full-featured authenticated dashboard.
+- **Drizzle ORM:** Users and campaigns models (Postgres) with migrations ready.
 
 ## 2. Technology Stack
 - Next.js 16 App Router, React 19, TypeScript 5 (strict).
 - Styling: Tailwind + PostCSS pipeline; modern purple Mailvibe palette.
 - UI kit: shadcn/ui (Radix/Nova).
-- Icons: `lucide-react` (default).
-- Data: Drizzle ORM + PostgreSQL.
-- API: `/api/send-campaign` with SendGrid integration (Edge runtime).
+- Icons: `lucide-react`.
+- Data: Drizzle ORM + PostgreSQL, campaigns model.
+- API: `/api/send-campaign` (Edge), `/api/auth/*` (NextAuth).
 - Tooling: ESLint 9, PostCSS.
 - Deploy: Vercel (Docker supported if needed).
 
@@ -27,17 +26,27 @@ app/
   layout.tsx
   page.tsx
   api/send-campaign/route.ts
+  (dashboard)/
+    dashboard/
+      layout.tsx
+      page.tsx
+      campaigns/
+        page.tsx
+        new/page.tsx
+  (login)/
+    login/page.tsx
+    register/page.tsx
   globals.css
 components/
   forms/SendCampaignDemo.tsx
   home/
-    [section components]
+    [landing sections]
+  [dashboard/account widgets, campaign forms/lists]
 content/
   home.ts
-lib/db/
-  schema.ts
-  client.ts
-[config, assets, migration, infra files as before]
+lib/db/schema.ts
+lib/db/client.ts
+[config, migration, infra files as before]
 ```
 
 ## 4. Install & Run
@@ -45,35 +54,35 @@ lib/db/
 npm install
 npm run dev
 ```
-- Demo requires: `SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL` in `.env.local`.
-- To test: Open `/`, use the email form.
+- Dashboard requires: `DATABASE_URL`, `AUTH_SECRET`.
+- Demo email: `SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL`.
 
 ## 5. Routing & Components
-- Landing page: `app/page.tsx` (Mailvibe hero, client section, pricing, live demo, feature sections).
-- Demo form: `components/forms/SendCampaignDemo.tsx` ("Send Campaign", hit Edge API).
-- Edge API: `app/api/send-campaign/route.ts`.
+- Landing: `app/page.tsx`.
+- Dashboard: `app/(dashboard)/dashboard/` (protected, user-only).
+- Campaigns: `/dashboard/campaigns` (list), `/dashboard/campaigns/new` (create).
+- Auth: `/login`, `/register`.
+- Demo form: `components/forms/SendCampaignDemo.tsx`.
 
 ## 6. Environment & Secrets
-- Set both `SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL` for live campaign email demo.
-- ENV: `DATABASE_URL`, `AUTH_SECRET`, etc. as before.
+- `.env.local`: `SENDGRID_API_KEY`, `SENDGRID_FROM_EMAIL`, `DATABASE_URL`, `AUTH_SECRET`.
+- More can be added for integrations.
 
 ## 7. Data & Backend
-- Present: users table/schema only (no campaign storage in demo).
-- Extensible for teams, billing, analytics.
+- Drizzle models: users, campaigns. All mutations gated by user/session.
+- Campaign ownership/visibility protected by userId.
 
-## 8. Server vs Client Components (Guardrails)
-- All campaign sending logic runs server-side (Edge API, never exposes mail API keys).
-- Client component for inputs/state only.
+## 8. Auth & Security
+- All dashboard endpoints/pages protected by NextAuth session.
+- Users may only CRUD/view their own campaigns.
 
 ## 9. Testing
-- No tests included. Add unit/E2E as needed.
+- No tests yet. Use Playwright, Jest, or your preference.
 
 ## 10. Change Guidelines
-- Update FILES.md and README.md whenever new features are shipped.
-- Docs/resource links, footer, and copyright:
-  - Owner: Chirag Dodiya (`chirag@bidx.ai`)
-  - Branding/assets: Mailvibe only.
+- Major features (dashboard, campaigns, auth): update FILES.md/README.md after shipping.
+- Owner: Chirag Dodiya (`chirag@bidx.ai`).
 
 ---
 
-Clear, fast, production-ready SaaS. Ready to ship or build further with Stripe/analytics/reporting/dashboard.
+Mailvibe: SaaS-grade, secure, ready to scale. Deploy and build further!
