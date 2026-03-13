@@ -1,13 +1,12 @@
-{
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "1",
-      "when": 1783296000000,
-      "tag": "0000_init",
-      "breakpoints": true
-    }
-  ]
-}
+[
+  {
+    "id": "0000_init",
+    "hash": "",
+    "timestamp": 0
+  },
+  {
+    "id": "0001_add_campaigns",
+    "hash": "",
+    "timestamp": 0
+  }
+]
