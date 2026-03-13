@@ -10,6 +10,9 @@ import { DocsSupportSection } from "../components/home/DocsSupportSection";
 import { LegalSection } from "../components/home/LegalSection";
 import { CtaSection } from "../components/home/CtaSection";
 import SendCampaignDemo from "../components/forms/SendCampaignDemo";
+import Link from "next/link";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 // Swap palette: purple-blue for Mailvibe
 const BRAND_COLOR = "#6c47ff";
@@ -39,9 +42,10 @@ export const metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
   const content = getHomeContent();
   const fromEmail = process.env.SENDGRID_FROM_EMAIL || "demo@yourdomain.com";
+  const session = await getServerSession(authOptions);
 
   // Section toggles (unchanged)
   const only = (process.env.ONLY_SECTIONS ?? "")
@@ -71,7 +75,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#ede7fc] via-white to-[#f9f6ff] text-[#10042c]">
       <main className="flex min-h-screen w-full flex-col gap-12 px-6 py-12 sm:px-10 lg:px-16 lg:max-w-[1600px] lg:mx-auto">
-        {/* Mailvibe header with new branding */}
+        {/* Mailvibe header with new branding and auth-aware navigation */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="rounded-full border border-[#6c47ff]/30 bg-white px-5 py-2 shadow-sm">
@@ -94,6 +98,30 @@ export default function Home() {
             >
               Get Started
             </a>
+            {/* Auth navigation */}
+            {session?.user ? (
+              <Link
+                href="/dashboard"
+                className="w-full sm:w-auto text-center rounded-full border border-[#642be3]/20 bg-[#642be3] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#6c47ff] hover:shadow-md"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="w-full sm:w-auto text-center rounded-full border border-[#6c47ff]/30 bg-white px-4 py-2 text-sm font-semibold text-[#6c47ff] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="w-full sm:w-auto text-center rounded-full bg-[#6c47ff] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#642be3] hover:shadow-md"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </header>
         {sections
