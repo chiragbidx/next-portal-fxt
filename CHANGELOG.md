@@ -2,14 +2,13 @@
 
 ## 2024-03-13
 
-### Fixed: NextAuth Session Typing for user.id
+### Added: Full Database-Backed Registration and Secure Login
 
-- Extended NextAuth types via `types/nextauth.d.ts` to ensure `session.user.id` is recognized and typed throughout the app.
-- Updated `lib/auth.ts` to always set `token.sub` to user.id during sign-in and propagate that field to `session.user.id` in the session callback, guaranteeing type safety and runtime correctness.
-- No changes to database structure or UI/UX; enables error-free access to `session.user.id` for all dashboard campaign/CRUD logic.
+- Introduced `app/register/actions.ts` server action to handle user registration with strong validation and bcrypt password hashing.
+- Rebuilt registration page (`app/register/page.tsx`) with live DB integration, robust error handling, and redirect on success.
+- Rebuilt login page (`app/login/page.tsx`) for credential sign-in with NextAuth, proper feedback, and registration success display.
+- Registration enforces unique emails and strong password requirements.
+- All user data handled and validated server-side; credentials never exposed in the client.
+- End-to-end: new users can sign up and log in, with full error/success feedback for every auth scenario.
 
 ---
-
-### Previous updates (same day):
-
-[list of previous changes as documented in prior entries remains unchanged; do not remove or alter historical log content]
