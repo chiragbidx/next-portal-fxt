@@ -9,12 +9,40 @@ import { SecuritySection } from "../components/home/SecuritySection";
 import { DocsSupportSection } from "../components/home/DocsSupportSection";
 import { LegalSection } from "../components/home/LegalSection";
 import { CtaSection } from "../components/home/CtaSection";
+import SendCampaignDemo from "../components/forms/SendCampaignDemo";
+
+// Swap palette: purple-blue for Mailvibe
+const BRAND_COLOR = "#6c47ff";
+const BRAND_ACCENT = "#642be3";
+const BRAND_LIGHT = "#ede7fc";
+const BRAND_NAME = "Mailvibe";
+const BRAND_DESC = "Fast, simple & reliable email marketing for modern teams.";
+
+export const metadata = {
+  title: "Mailvibe — Email Marketing SaaS",
+  description: "Create, send, and track beautiful email campaigns with Mailvibe. Modern, production-grade SaaS starter for mass email.",
+  openGraph: {
+    title: "Mailvibe — Email Marketing SaaS",
+    description: "Create, send, and track beautiful email campaigns with Mailvibe.",
+    url: process.env.BASE_URL || "https://mailvibe.com",
+    siteName: "Mailvibe",
+    images: [
+      {
+        url: "/mailvibe-og.png",
+        width: 1200,
+        height: 627,
+        alt: "Mailvibe Email SaaS",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
 
 export default function Home() {
   const content = getHomeContent();
 
-  // Simple toggles so agents/users can hide sections without touching JSX.
-  // Use ONLY_SECTIONS (comma list) to whitelist, or HIDE_SECTIONS to blacklist.
+  // Section toggles (unchanged)
   const only = (process.env.ONLY_SECTIONS ?? "")
     .split(",")
     .map((s) => s.trim().toLowerCase())
@@ -23,12 +51,13 @@ export default function Home() {
     .split(",")
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
-  const defaultHide = ["features", "metrics", "pricing", "security", "docs", "legal"];
+  const defaultHide = [];
   const whitelist = only.length ? new Set(only) : null;
   const hide = new Set(whitelist ? envHide : [...defaultHide, ...envHide]);
   const sections = [
     ["hero", <HeroSection key="hero" content={content.hero} />],
     ["logos", <LogosMarqueeSection key="logos" content={content.logos} />],
+    ["sendcampaign", <SendCampaignDemo key="sendcampaign" />],
     ["features", <FeaturesSection key="features" content={content.features} />],
     ["metrics", <MetricsSection key="metrics" content={content.metrics} />],
     ["pricing", <PricingSection key="pricing" content={content.pricing} />],
@@ -39,41 +68,40 @@ export default function Home() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-50 via-white to-[#ffe6d8] text-zinc-900">
+    <div className="min-h-screen bg-gradient-to-b from-[#ede7fc] via-white to-[#f9f6ff] text-[#10042c]">
       <main className="flex min-h-screen w-full flex-col gap-12 px-6 py-12 sm:px-10 lg:px-16 lg:max-w-[1600px] lg:mx-auto">
-        {/* Header: Panda wordmark and primary actions (docs/deploy); wraps on small screens */}
+        {/* Mailvibe header with new branding */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-full border border-[#fb7232]/30 bg-white px-5 py-2 shadow-sm">
-              <span className="text-2xl font-black tracking-tight text-[#fb7232]">Panda</span>
+            <div className="rounded-full border border-[#6c47ff]/30 bg-white px-5 py-2 shadow-sm">
+              <span className="text-2xl font-black tracking-tight text-[#6c47ff]">{BRAND_NAME}</span>
             </div>
-            <p className="text-sm font-medium text-[#c75829] sm:text-base">
-              Lightweight SaaS starter ready to ship.
+            <p className="text-sm font-medium text-[#642be3] sm:text-base">
+              {BRAND_DESC}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 sm:justify-end w-full sm:w-auto">
             <a
-              href="https://nextjs.org/docs"
-              className="w-full sm:w-auto text-center rounded-full border border-[#fb7232]/30 bg-white px-4 py-2 text-sm font-semibold text-[#c75829] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              href="https://mailvibe.com/docs"
+              className="w-full sm:w-auto text-center rounded-full border border-[#6c47ff]/30 bg-white px-4 py-2 text-sm font-semibold text-[#642be3] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
               Docs
             </a>
             <a
-              href="https://vercel.com/new"
-              className="w-full sm:w-auto text-center rounded-full bg-[#fb7232] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e06225] hover:shadow-md"
+              href="https://mailvibe.com/pricing"
+              className="w-full sm:w-auto text-center rounded-full bg-[#6c47ff] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#642be3] hover:shadow-md"
             >
-              Deploy
+              Get Started
             </a>
           </div>
         </header>
-
         {sections
           .filter(([id]) => (whitelist ? whitelist.has(id) : true))
           .filter(([id]) => !hide.has(id))
           .map(([, node]) => node)}
       </main>
 
-      {/* lightweight animations defined locally to avoid tailwind config changes */}
+      {/* Updated lightweight animations */}
       <style>{`
         @keyframes float {
           0% { transform: translateY(0px); }
@@ -109,7 +137,7 @@ export default function Home() {
         }
         .hover-lift:hover {
           transform: translateY(-6px);
-          box-shadow: 0 20px 40px -24px rgba(251, 114, 50, 0.45);
+          box-shadow: 0 20px 40px -24px rgba(108, 71, 255, 0.35);
         }
       `}</style>
     </div>
