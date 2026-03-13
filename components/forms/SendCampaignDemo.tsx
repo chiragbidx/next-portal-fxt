@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type SendState = "idle" | "loading" | "success" | "error";
 
-export default function SendCampaignDemo() {
+export default function SendCampaignDemo({ fromEmail }: { fromEmail: string }) {
   const [state, setState] = useState<SendState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [to, setTo] = useState("");
@@ -109,7 +109,7 @@ export default function SendCampaignDemo() {
         )}
       </form>
       <p className="mt-6 text-xs text-zinc-400">
-        Powered by SendGrid. Emails sent from <span className="font-mono">{process.env.SENDGRID_FROM_EMAIL || "demo@yourdomain.com"}</span>
+        Powered by SendGrid. Emails sent from <span className="font-mono">{fromEmail}</span>
       </p>
     </section>
   );
