@@ -46,15 +46,16 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token, user }) {
       if (token && session.user) {
         // Copy extra props onto user
-        session.user.id = token.sub;
-        session.user.firstName = token.firstName;
-        session.user.lastName = token.lastName;
+        session.user.id = token.sub as string; // Always defined if present
+        session.user.firstName = token.firstName as string | undefined;
+        session.user.lastName = token.lastName as string | undefined;
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         // Attach DB user fields to token for session use
+        token.sub = user.id;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
       }
